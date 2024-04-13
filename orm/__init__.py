@@ -22,12 +22,15 @@ class RedOrm:
 
         self.config.addr = f"{self.config.host}:{self.conf.port}"
 
-    def get(self, key: Optional[str] = None):
-        # fmt: off
-        if not key: key = "*"
-        # fmt: on
+    def get(self, key: Optional[str] = None, _type: str = 'utf8'):
+        if not key:
+            key = "*"
         
-        return self.rdb.get(key)
+        val = self.rdb.get(key)
+        if _type == 'utf8':
+            return val.decode('utf-8')
+        else:
+            return val
 
     def set(self, key: str, value: str):
         self.rdb.set(key, value)
@@ -63,9 +66,9 @@ class RedOrm:
         return {
             "Addr": os.getenv("DB_HOST"),
             "Password": os.getenv("DB_PASSWORD"),
-            "DB": "0",
-            "PORT": "6379",
+            "DB": 0,
+            "PORT": 6379,
         }
 
     def _default_env():
-        return {"Addr": "localhost", "Password": "", "DB": "0", "PORT": "6379"}
+        return {"Addr": "localhost", "Password": "", "DB": 0, "PORT": 6379}
