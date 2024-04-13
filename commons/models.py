@@ -4,8 +4,9 @@ import pydantic
 
 
 class Command(pydantic.BaseModel):
-    command: str
-    limit: Optional[Union[str, int]] = 10
+    command: str = None
+    key: Optional[str] = None
+    val: Optional[str] = None
 
     @pydantic.field_validator("command")
     def cannot_be_empty(cls, v):
@@ -16,7 +17,8 @@ class Command(pydantic.BaseModel):
 
 @dataclasses.dataclass
 class Config:
-    host: str
-    port: int
-    db: int
-    password: str
+    host: str = None
+    port: int = None
+    db: int = None
+    password: str = None
+    addr: str = None
