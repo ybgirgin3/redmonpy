@@ -1,10 +1,11 @@
 import os
 import logging
-import dataclasses
+from typing import Optional
 
+
+import redis
 import dacite
 import dacite.exceptions
-import redis
 from dotenv import load_dotenv
 
 from commons.models import Config
@@ -21,9 +22,19 @@ class RedOrm:
 
         self.config.addr = f"{self.config.host}:{self.conf.port}"
 
-    def get(self):
-        pass
+    def get(self, key: Optional[str] = None):
+        # fmt: off
+        if not key: key = "*"
+        # fmt: on
         
+        return self.rdb.get(key)
+
+    def set(self, key: str, value: str):
+        self.rdb.set(key, value)
+        logging.info(f"set {key}:{value}")
+
+    def quit(self):
+        self.rdb.close()
 
     @property
     def rdb(self):
