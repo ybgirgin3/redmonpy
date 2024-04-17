@@ -7,6 +7,7 @@ class Command(pydantic.BaseModel):
     command: str = None
     key: Optional[str] = None
     val: Optional[str] = None
+    force: Optional[bool] = False
 
     @pydantic.field_validator("command")
     def cannot_be_empty(cls, v):

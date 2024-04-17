@@ -1,6 +1,6 @@
 import os
 import logging
-from typing import Optional
+from typing import Optional, Union
 
 
 import dacite.dataclasses
@@ -18,8 +18,9 @@ class RedOrm:
     # def __init__(self, addr=None, password=None, port=6379, db=0) -> None:
     def __init__(self, conf: dict = {}) -> None:
         print(self.cred)
-        try:
-            self.config = dacite.from_dict(Config, conf)
+        # fmt: off
+        try: self.config = dacite.from_dict(Config, conf)
+        # fmt: on
 
         except dacite.exceptions.MissingValueError as e:
             logging.info("credential infos are not completed, returning to default")
@@ -29,21 +30,21 @@ class RedOrm:
             logging.info("credential infos are not completed, returning to default")
             self.config = dacite.from_dict(Config, self.cred)
 
-        print("init before", self.config)
 
-        # self.config.addr = f"{self.config.host}:{self.config.port}"
-
-        # print('init after', self.config)
-
-    def execute(self, cmd: str, key: str = None, val: str = None):
+    def execute(self, cmd: str, key: Optional[str] = None, val: Optional[str] = None, force: Optional[bool] = False):
         print(cmd, key, val)
         try:
             if not key:
-                return self.rdb.keys()
+                return {
+                    key: self.rdb.get(key).decode("utf-8") for key in self.rdb.keys()
+                }
 
             if cmd.upper() == "SET" and key and val:
+                # look for if key is exists in
+                if self.get(key) and not force:
+                    return {'err' : "this key is already exists in db, use --force argument"}
                 response = self.rdb.execute_command("SET", key, val)
-                if response == b"OK":
+                if response:
                     print("resp", response)
                     return True
 
@@ -51,7 +52,7 @@ class RedOrm:
                 print("in GET key:", key)
                 value = self.rdb.execute_command("GET", key)
                 print("value from get", value)
-                assert val == value.decode("utf-8")
+                # assert val == value.decode("utf-8")
                 return value
         except Exception as e:
             print(e)
