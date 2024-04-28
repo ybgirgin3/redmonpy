@@ -1,10 +1,10 @@
-from typing import Optional, Union
+from typing import Optional
 import dataclasses
 import pydantic
 
 
 class Command(pydantic.BaseModel):
-    command: str = None
+    command: Optional[str] = None
     key: Optional[str] = None
     val: Optional[str] = None
     force: Optional[bool] = False
@@ -18,8 +18,8 @@ class Command(pydantic.BaseModel):
 
 @dataclasses.dataclass
 class Config:
-    host: str = None
-    port: int = None
-    db: int = None
-    password: str = None
-    addr: str = None
+    host: Optional[str] = None
+    port: Optional[int] = None
+    db: Optional[int] = None
+    password: Optional[str] = None
+    addr: Optional[str] = None

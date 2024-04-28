@@ -17,4 +17,8 @@ async def execute(req: Request, cmd: dict):
     command = Command(**cmd)
     print(command)
     red = RedOrm()
-    return {"response": red.execute(command.command, command.key, command.val, command.force)}
+    return {
+        "response": red.execute(
+            command.command, command.key, command.val, command.force
+        )
+    }

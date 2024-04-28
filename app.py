@@ -1,5 +1,6 @@
 import uvicorn
-from dotenv import dotenv_values
+
+# from dotenv import dotenv_values
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,9 +14,9 @@ from orm import RedOrm
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.red_mon = RedOrm()
+    red_mon = RedOrm()
     yield
-    app.red_mon.quit()
+    red_mon.quit()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -29,25 +30,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-# @app.on_event("startup")
-# def start_db_client():
-#     """
-#     _summary_: connect mongodb client at the start of the app
-#     :return: None
-#     """
-#     app.red_orm = RedOrm()
-
-
-# @app.on_event("shutdown")
-# def stop_db_client():
-#     """
-#     __summary__: close connection at the end of the app
-
-#     :return: None
-#     """
-#     app.mongo_client.close()
 
 
 app.include_router(execute.router)
