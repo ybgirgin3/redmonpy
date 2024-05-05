@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request
 import dacite
 
 
-from commons.models import Command, Config
+from commons.models import Command
 from orm import RedOrm
 
 
@@ -19,6 +19,6 @@ async def execute(req: Request, cmd: dict):
     red = RedOrm()
     return {
         "response": red.execute(
-            command.command, command.key, command.val, command.force
+            command.command, command.key, command.val, command.force  # type: ignore
         )
     }
