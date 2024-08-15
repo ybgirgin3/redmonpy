@@ -1,24 +1,15 @@
-version: '3.12'
+version: '3'
 
 services:
-  web:
+  app:
     build: .
     ports:
       - "8000:8000"
     depends_on:
       - redis
-    environment:
-      PASSWORD: ""
-      DB: 0
-      PORT: 6379
 
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
-    volumes:
-      - redis_data:/data
-
-  volumes:
-    redis_data:
 

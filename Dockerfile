@@ -16,6 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Expose the port that the app runs on
 EXPOSE 8000
 
+# Define environment variable
+ENV REDIS_HOST redis
+ENV REDIS_PORT 6379
+
 # Run the application
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 

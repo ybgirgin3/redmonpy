@@ -10,14 +10,17 @@ import dacite.exceptions
 from dotenv import load_dotenv
 
 from commons.models import Config
+from .python_orm import _get, _set, _quit
 
 
 class RedOrm:
     debug = True
 
     # def __init__(self, addr=None, password=None, port=6379, db=0) -> None:
-    def __init__(self, conf: dict = {}) -> None:
-        print(self.cred)
+    def __init__(self, conf=None) -> None:
+        if conf is None:
+            conf = self.cred
+        print("conf in init: ", conf)
         try:
             self.config = dacite.from_dict(Config, conf)
 
@@ -67,22 +70,12 @@ class RedOrm:
         except Exception as e:
             print(e)
 
-    def get(self, key: Optional[str] = None, _type: str = "utf8"):
-        if not key:
-            key = "*"
-
-        val = self.rdb.get(key)
-        if _type == "utf8":
-            return val.decode("utf-8")  # type: ignore
-        else:
-            return val
-
-    def set(self, key: str, value: str):
-        self.rdb.set(key, value)
-        logging.info(f"set {key}:{value}")
-
-    def quit(self):
-        self.rdb.close()
+    # *** PYTHON ORM ***
+    # fmt: off
+    def get(self, key: Optional[str] = None, _type: str = "utf8"): return _get(self, key, _type)
+    def set(self, key: str, value: str): return _set(self, key, value)
+    def quit(self): _quit(self)
+    # fmt: on
 
     @property
     def rdb(self):
@@ -120,5 +113,6 @@ class RedOrm:
             "port": 6379,
         }
 
-    def _default_env(self):
-        return {"host": "localhost", "password": "", "db": 0, "port": 6379}
+    # fmt: off
+    def _default_env(self): return {"host": "localhost", "password": "", "db": 0, "port": 6379}
+    # fmt: on
