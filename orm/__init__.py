@@ -86,24 +86,25 @@ class RedOrm:
 
     @property
     def rdb(self):
-        try:
-            print("conf in rdb", self.config)
-            rdb = redis.Redis(
-                host=self.config.host, password=self.config.password, db=self.config.db  # type: ignore
-            )
-            print("connected")
-        except Exception as e:
-            logging.error("unable to connect redis", exc_info=e)
+        if not hasattr(self, '_redis_connection_manager'):
+            try:
+                print("conf in rdb", self.config)
+                self._redis_connection_manager = redis.Redis(
+                    host=self.config.host, password=self.config.password, db=self.config.db  # type: ignore
+                )
+                print("connected")
+            except Exception as e:
+                logging.error("unable to connect redis", exc_info=e)
 
         # ping
         try:
-            p = rdb.ping()  # type: ignore
+            p = self._redis_connection_manager.ping()  # type: ignore
             logging.info("pingged", p)
             print("pingged", p)
         except BaseException:
             logging.error("unable to ping redis")
 
-        return rdb  # type: ignore
+        return self._redis_connection_manager # type: ignore
 
     @property
     def cred(self) -> dict:
